@@ -76,13 +76,7 @@ void loop() {
   IRdistance_cm = IRsensor.distance();
   setDist = map(analogRead(potPin),0,1023,10,50);
 
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
-  USdistance_cm = microsecondsToCentimeters(duration);
+  USdistance_cm = read_ultrasonic_sensor();
      
   // Print the measured distance to the serial monitor:
   Serial.print(IRdistance_cm);
@@ -90,11 +84,58 @@ void loop() {
   Serial.print(USdistance_cm);
   Serial.print(",");
   Serial.println(setDist);
+}
 
-  int USDiff = abs(setDist - USdistance_cm);
-  int IRDiff = abs(setDist - IRdistance_cm);
+int read_ultrasonic_sensor() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  return microsecondsToCentimeters(duration);
 }
 
 long microsecondsToCentimeters(long microseconds) {
    return microseconds / 29 / 2;
+}
+
+// PID Control
+int pos_last, pos_accumul;
+int vel_last, vel_accumulate;
+
+void limit(int *val, int minimum, int maximum) {
+  if (*val > maximum) {
+    *val = maximum;
+  } else if (*val < minimum) {
+    *val = minimum;
+  }
+}
+
+int pid(int target, int current, int p, int i, int d, int i_clamp, int out_clamp, int deadzone, int punch, int *last, int *accumulate_error) {
+  int error = target - current;
+
+  // P stuff
+  int p_term = p * error;
+
+  // I stuff
+  *accumulate_error += i * error;
+  limit(accumulate_error, -i_clamp, i_clamp);
+  int i_term = *accumulate_error * i;
+
+  // D stuff
+  int d_term  = (*last - current) * d;
+  *last = current;
+
+  // Punch stuff
+  int punch_term = 0;
+  if (error > deadzone) {
+    punch_term = punch;
+  } else if (error < deadzone) {
+    punch_term = -punch;
+  }
+
+  int sum = p_term + i_term + d_term + punch_term;
+  limit(&sum, -out_clamp, out_clamp);
+  return sum;
 }
