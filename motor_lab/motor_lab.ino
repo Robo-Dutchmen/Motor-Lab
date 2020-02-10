@@ -110,7 +110,7 @@ long microsecondsToCentimeters(long microseconds) {
    return microseconds / 29 / 2;
 }
 
-void servo_goto(int deg, Adafruit_PWMServoDriver &servo)
+void servo_goto(int deg)
 {
   pulselen = map(deg, 0, 180, SERVOMIN, SERVOMAX);
   uint8_t servonum = 15; // address on the board where the servo is wired
