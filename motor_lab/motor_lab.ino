@@ -1,8 +1,8 @@
 #include <SharpIR.h>
 // Define model and input pin:
 #define potPin A0
-#define trigPin 2
-#define echoPin 3
+#define trigPin 3
+#define echoPin 2
 #define IRPin A1
 #define model 1080
 #define redLED 5
@@ -22,7 +22,7 @@ long duration, USdistance_cm;
 */
 
 // STEPPER HELPER FUNCTIONS
-void stepper_goto(int steps){
+void stepper_set_steps(int steps){
   if (steps < 0){
     digitalWrite(STEPPER_DIR_PIN, LOW);
     steps = steps * -1;
@@ -34,9 +34,9 @@ void stepper_goto(int steps){
   for (int i = 0; i < steps; i++) {
     // These four lines result in 1 step:
     digitalWrite(STEPPER_STP_PIN, HIGH);
-    delayMicroseconds(10);
+    delayMicroseconds(100);
     digitalWrite(STEPPER_STP_PIN, LOW);
-    delayMicroseconds(10);
+    delayMicroseconds(100);
   }
 
 }
@@ -104,6 +104,8 @@ void loop() {
     digitalWrite(greenLED,LOW);
     digitalWrite(redLED,LOW);
   }
+
+  stepper_set_steps(100);
     
 }
 
