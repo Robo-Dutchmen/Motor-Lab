@@ -112,7 +112,7 @@ long microsecondsToCentimeters(long microseconds) {
 
 void servo_goto(int deg)
 {
-  pulselen = map(deg, 0, 180, SERVOMIN, SERVOMAX);
+  int pulselen = map(deg, 0, 180, SERVOMIN, SERVOMAX);
   uint8_t servonum = 15; // address on the board where the servo is wired
   servo.setPWM(servonum, 0, pulselen);
 }
