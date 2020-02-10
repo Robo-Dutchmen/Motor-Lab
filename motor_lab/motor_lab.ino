@@ -7,6 +7,8 @@
 #define model 1080
 #define redLED 5
 #define greenLED 6
+#define STEPPER_STP_PIN 10
+#define STEPPER_DIR_PIN 11
 
 // Create variable to store the distance:
 int IRdistance_cm, setDist;
@@ -19,6 +21,26 @@ long duration, USdistance_cm;
   GP2YA41SK0F --> 430
 */
 
+// STEPPER HELPER FUNCTIONS
+void stepper_goto(int steps){
+  if (steps < 0){
+    digitalWrite(STEPPER_DIR_PIN, LOW);
+    steps = steps * -1;
+  }
+  else{
+    digitalWrite(STEPPER_DIR_PIN, HIGH);
+  }
+
+  for (int i = 0; i < steps; i++) {
+    // These four lines result in 1 step:
+    digitalWrite(STEPPER_STP_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(STEPPER_STP_PIN, LOW);
+    delayMicroseconds(10);
+  }
+
+}
+
 // Create a new instance of the SharpIR class:
 SharpIR IRsensor = SharpIR(IRPin, model);
 int val = 0;
@@ -30,9 +52,10 @@ void setup() {
   pinMode(echoPin, INPUT);
   pinMode(redLED, OUTPUT);
   pinMode(greenLED, OUTPUT);
-//  pinMode(13,OUTPUT);
-
-
+  
+  // STEPPER PINS
+  pinMode(STEPPER_STP_PIN, OUTPUT);
+  pinMode(STEPPER_DIR_PIN, OUTPUT);
 }
 
 void loop() {
@@ -49,21 +72,11 @@ void loop() {
   USdistance_cm = microsecondsToCentimeters(duration);
      
   // Print the measured distance to the serial monitor:
-  
-//  Serial.print("Set Distance: ");
-  
-//  Serial.println(" cm");
-//  Serial.print("IR distance: ");
   Serial.print(IRdistance_cm);
   Serial.print(",");
-//  Serial.println(" cm");
-//  Serial.print("Ultrasonic distance: ");
   Serial.print(USdistance_cm);
   Serial.print(",");
-//  Serial.println(" cm");
   Serial.println(setDist);
-//  Serial.println();
-//  Serial.println();
 
   int USDiff = abs(setDist - USdistance_cm);
   int IRDiff = abs(setDist - IRdistance_cm);
