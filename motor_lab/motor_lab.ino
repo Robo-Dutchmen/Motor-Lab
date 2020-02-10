@@ -1,5 +1,7 @@
 #include <SharpIR.h>
-// Define model and input pin:
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+
 #define potPin A0
 #define trigPin 2
 #define echoPin 3
@@ -8,21 +10,30 @@
 #define redLED 5
 #define greenLED 6
 
+#define SERVOMIN  150 // This is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX  600 // This is the 'maximum' pulse length count (out of 4096)
+#define USMIN  600 // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
+#define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
+#define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
+
 // Create variable to store the distance:
 int IRdistance_cm, setDist;
 long duration, USdistance_cm;
 
 /* IR Sensor Model :
   GP2Y0A02YK0F --> 20150
-  GP2Y0A21YK0F --> 1080
+  *GP2Y0A21YK0F --> 1080
   GP2Y0A710K0F --> 100500
   GP2YA41SK0F --> 430
 */
 
 // Create a new instance of the SharpIR class:
 SharpIR IRsensor = SharpIR(IRPin, model);
+Adafruit_PWMServoDriver servo = Adafruit_PWMServoDriver();
+
 int val = 0;
 float k = 0.1;
+
 void setup() {
   // Begin serial communication at a baudrate of 9600:
   Serial.begin(9600);
@@ -31,9 +42,10 @@ void setup() {
   pinMode(redLED, OUTPUT);
   pinMode(greenLED, OUTPUT);
 //  pinMode(13,OUTPUT);
-
-
-}
+  servo.begin();
+  servo.setOscillatorFrequency(27000000);
+  servo.setPWMFreq(SERVO_FREQ);
+ }
 
 void loop() {
   // Get a distance measurement and store it as distance_cm:
@@ -96,4 +108,11 @@ void loop() {
 
 long microsecondsToCentimeters(long microseconds) {
    return microseconds / 29 / 2;
+}
+
+void servo_goto(int deg, Adafruit_PWMServoDriver &servo)
+{
+  pulselen = map(deg, 0, 180, SERVOMIN, SERVOMAX);
+  uint8_t servonum = 15; // address on the board where the servo is wired
+  servo.setPWM(servonum, 0, pulselen);
 }
