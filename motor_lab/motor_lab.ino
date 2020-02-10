@@ -1,20 +1,18 @@
 #include <SharpIR.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <Servo.h>
 
 #define potPin A0
-#define trigPin 2
-#define echoPin 3
+#define trigPin 5
+#define echoPin 4
 #define IRPin A1
 #define model 1080
-#define redLED 5
-#define greenLED 6
-
-#define SERVOMIN  150 // This is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  600 // This is the 'maximum' pulse length count (out of 4096)
-#define USMIN  600 // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
-#define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
-#define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
+#define STEPPER_STP_PIN 12
+#define STEPPER_DIR_PIN 13
+#define DCMOTOR_IN1 5
+#define DCMOTOR_IN2 6
+#define SERVO_PIN 10
 
 // Create variable to store the distance:
 int IRdistance_cm, setDist;
@@ -27,9 +25,30 @@ long duration, USdistance_cm;
   GP2YA41SK0F --> 430
 */
 
+// STEPPER HELPER FUNCTIONS
+void stepper_set_steps(int steps){
+  if (steps < 0){
+    digitalWrite(STEPPER_DIR_PIN, LOW);
+    steps = steps * -1;
+  }
+  else{
+    digitalWrite(STEPPER_DIR_PIN, HIGH);
+  }
+
+  for (int i = 0; i < steps; i++) {
+    // These four lines result in 1 step:
+    digitalWrite(STEPPER_STP_PIN, HIGH);
+    delayMicroseconds(100);
+    digitalWrite(STEPPER_STP_PIN, LOW);
+    delayMicroseconds(100);
+  }
+}
+
+// DC MOTOR HELPER FUNCTIONS
+
 // Create a new instance of the SharpIR class:
 SharpIR IRsensor = SharpIR(IRPin, model);
-Adafruit_PWMServoDriver servo = Adafruit_PWMServoDriver();
+Servo servo;
 
 int val = 0;
 float k = 0.1;
@@ -39,12 +58,17 @@ void setup() {
   Serial.begin(9600);
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
-  pinMode(redLED, OUTPUT);
-  pinMode(greenLED, OUTPUT);
-//  pinMode(13,OUTPUT);
-  servo.begin();
-  servo.setOscillatorFrequency(27000000);
-  servo.setPWMFreq(SERVO_FREQ);
+
+  // STEPPER PINS
+  pinMode(STEPPER_STP_PIN, OUTPUT);
+  pinMode(STEPPER_DIR_PIN, OUTPUT);
+
+  // SERVO PINS
+  servo.attach(SERVO_PIN);
+
+  // DC MOTOR PINS
+  pinMode(DCMOTOR_IN1, OUTPUT);
+  pinMode(DCMOTOR_IN2, OUTPUT);
  }
 
 void loop() {
@@ -55,22 +79,11 @@ void loop() {
   USdistance_cm = read_ultrasonic_sensor();
      
   // Print the measured distance to the serial monitor:
-  
-//  Serial.print("Set Distance: ");
-  
-//  Serial.println(" cm");
-//  Serial.print("IR distance: ");
   Serial.print(IRdistance_cm);
   Serial.print(",");
-//  Serial.println(" cm");
-//  Serial.print("Ultrasonic distance: ");
   Serial.print(USdistance_cm);
   Serial.print(",");
-//  Serial.println(" cm");
   Serial.println(setDist);
-//  Serial.println();
-//  Serial.println();
-    
 }
 
 int read_ultrasonic_sensor() {
@@ -85,13 +98,6 @@ int read_ultrasonic_sensor() {
 
 long microsecondsToCentimeters(long microseconds) {
    return microseconds / 29 / 2;
-}
-
-void servo_goto(int deg)
-{
-  int pulselen = map(deg, 0, 180, SERVOMIN, SERVOMAX);
-  uint8_t servonum = 15; // address on the board where the servo is wired
-  servo.setPWM(servonum, 0, pulselen);
 }
 
 // PID Control
