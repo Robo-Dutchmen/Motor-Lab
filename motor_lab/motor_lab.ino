@@ -1,22 +1,18 @@
 #include <SharpIR.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <Servo.h>
 
 #define potPin A0
-#define trigPin 3
-#define echoPin 2
+#define trigPin 5
+#define echoPin 4
 #define IRPin A1
 #define model 1080
-#define STEPPER_STP_PIN 10
-#define STEPPER_DIR_PIN 11
+#define STEPPER_STP_PIN 12
+#define STEPPER_DIR_PIN 13
 #define DCMOTOR_IN1 5
 #define DCMOTOR_IN2 6
-
-#define SERVOMIN  150 // This is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  600 // This is the 'maximum' pulse length count (out of 4096)
-#define USMIN  600 // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
-#define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
-#define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
+#define SERVO_PIN 10
 
 // Create variable to store the distance:
 int IRdistance_cm, setDist;
@@ -46,14 +42,13 @@ void stepper_set_steps(int steps){
     digitalWrite(STEPPER_STP_PIN, LOW);
     delayMicroseconds(100);
   }
-
 }
 
 // DC MOTOR HELPER FUNCTIONS
 
 // Create a new instance of the SharpIR class:
 SharpIR IRsensor = SharpIR(IRPin, model);
-Adafruit_PWMServoDriver servo = Adafruit_PWMServoDriver();
+Servo servo;
 
 int val = 0;
 float k = 0.1;
@@ -69,9 +64,7 @@ void setup() {
   pinMode(STEPPER_DIR_PIN, OUTPUT);
 
   // SERVO PINS
-  servo.begin();
-  servo.setOscillatorFrequency(27000000);
-  servo.setPWMFreq(SERVO_FREQ);
+  servo.attach(SERVO_PIN);
 
   // DC MOTOR PINS
   pinMode(DCMOTOR_IN1, OUTPUT);
@@ -100,44 +93,8 @@ void loop() {
 
   int USDiff = abs(setDist - USdistance_cm);
   int IRDiff = abs(setDist - IRdistance_cm);
-
-//  if(USDiff <= 2 && IRDiff > 2) // if US Sensor is within 2cm and IR Sensor isn't -> Green LED
-//  {
-//    digitalWrite(greenLED,HIGH);
-//    digitalWrite(redLED,LOW);
-//  }
-//  
-//  if(IRDiff <= 2 && USDiff > 2) // if IR Sensor is within 2cm and US Sensor isn't -> Red LED
-//  {
-//    digitalWrite(greenLED,LOW);
-//    digitalWrite(redLED,HIGH);
-//  }
-//  
-//  if(USDiff <= 2 && IRDiff <= 2) // if they're both within 2cm -> both red and green LEDs
-//  {
-//    digitalWrite(greenLED,HIGH);
-//    digitalWrite(redLED,HIGH);
-//  }
-//
-//  if(USDiff > 2 && IRDiff > 2) // if they're both > 2cm -> both LEDs off
-//  {
-//    digitalWrite(greenLED,LOW);
-//    digitalWrite(redLED,LOW);
-//  }
-
-  servo_goto(100);
-//  analogWrite(DCMOTOR_IN1, LOW);
-//  digitalWrite(DCMOTOR_IN2, LOW);
-    
 }
 
 long microsecondsToCentimeters(long microseconds) {
    return microseconds / 29 / 2;
-}
-
-void servo_goto(int deg)
-{
-  int pulselen = map(deg, 0, 180, SERVOMIN, SERVOMAX);
-  uint8_t servonum = 15; // address on the board where the servo is wired
-  servo.setPWM(servonum, 0, pulselen);
 }
