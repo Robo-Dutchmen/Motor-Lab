@@ -10,8 +10,9 @@
 #define model 1080
 #define STEPPER_STP_PIN 12
 #define STEPPER_DIR_PIN 13
-#define DCMOTOR_IN1 5
-#define DCMOTOR_IN2 6
+#define STEPPER_STEPS_PER_REV 400
+#define DCMOTOR_IN1 2
+#define DCMOTOR_IN2 3
 #define SERVO_PIN 10
 
 // Create variable to store the distance:
@@ -38,9 +39,9 @@ void stepper_set_steps(int steps){
   for (int i = 0; i < steps; i++) {
     // These four lines result in 1 step:
     digitalWrite(STEPPER_STP_PIN, HIGH);
-    delayMicroseconds(100);
+    delayMicroseconds(1000);
     digitalWrite(STEPPER_STP_PIN, LOW);
-    delayMicroseconds(100);
+    delayMicroseconds(1000);
   }
 }
 
@@ -84,6 +85,20 @@ void loop() {
   Serial.print(USdistance_cm);
   Serial.print(",");
   Serial.println(setDist);
+  
+  stepper_set_steps(100);
+}
+
+void servo_test(){
+  for (int pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    servo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
+  for (int pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+    servo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
 }
 
 int read_ultrasonic_sensor() {
