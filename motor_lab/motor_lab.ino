@@ -132,8 +132,8 @@ void setup() {
   pinMode(PIN_MOTOR_ENCODER_B, INPUT);
 
   // Attach interrupts for motor encoders
-  attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_ENCODER_A), update_dcm_pos_feedback, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_ENCODER_B), update_dcm_pos_feedback, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_ENCODER_A), update_dcm_pos_feedback, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_ENCODER_B), update_dcm_pos_feedback, CHANGE);
 
   // Initialize encoder state
   dcm_fb_a = digitalRead(PIN_MOTOR_ENCODER_A);
@@ -152,10 +152,11 @@ void setup() {
 void loop() {
   // Update sensors
   IRdistance_cm = IRsensor.distance();
-  setDist = map(analogRead(potPin),0,1023,10,50);
+//  setDist = map(analogRead(potPin),0,1023,0,50);
+  setDist = analogRead(potPin);
   USdistance_cm = read_ultrasonic_sensor();
   print_sensors();
-  dcm_step();
+//  dcm_step();
 }
 
 int read_ultrasonic_sensor() {
@@ -176,7 +177,7 @@ void print_sensors() {
   Serial.print(",");
   Serial.println(setDist);
   
-  stepper_set_steps(100);
+//  stepper_set_steps(100);
 }
 
 void servo_test(){
