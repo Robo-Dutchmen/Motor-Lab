@@ -298,6 +298,13 @@ void update_dcm_pos_feedback() {
   dcm_fb_position = (dcm_fb_position_ticks * DCM_TICKS_TO_DEG_NUMERATOR) / DCM_TICKS_TO_DEG_DENOMINATOR;
 }
 
+<<<<<<< HEAD
+void servo_goto(int deg)
+{
+  int pulselen = map(deg, 0, 180, SERVOMIN, SERVOMAX);
+  uint8_t servonum = 15; // address on the board where the servo is wired
+  servo.setPWM(servonum, 0, pulselen);
+=======
 /*
  * Params
  *  Target:     The target value
@@ -353,4 +360,5 @@ int pid(int target, int current, int p, int i, int d, int i_clamp, int out_clamp
 //  Serial.print("     \t S: ");
 //  Serial.println(sum);
   return sum;
+>>>>>>> 811eabd2c6cb3c8ab2f44f67c82fd57c6dbfc73c
 }
