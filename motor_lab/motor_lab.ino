@@ -28,15 +28,15 @@
 // Motor encoder direction.
 // Used for skip states by the encoder
 // Thses values must be one or -1 for the code to function correctly
-#define DCM_CC 1
-#define DCM_CCW -1
+#define DCM_CC -1
+#define DCM_CCW 1
 
 // Ratio between encoder ticks and degrees
-#define DCM_TICKS_TO_DEG_NUMERATOR 1
-#define DCM_TICKS_TO_DEG_DENOMINATOR 1
+#define DCM_TICKS_TO_DEG_NUMERATOR 360.0
+#define DCM_TICKS_TO_DEG_DENOMINATOR 3400.0
 
 // Gains for position control for dc motor
-#define POS_P 0
+#define POS_P 10
 #define POS_I 0 
 #define POS_D 0 
 #define POS_I_CLAMP 65536
@@ -45,7 +45,7 @@
 #define POS_DEADZONE 0 
 
 // Gains for velocity control for dc motor
-#define VEL_P 0
+#define VEL_P 1
 #define VEL_I 0 
 #define VEL_D 0 
 #define VEL_I_CLAMP 65536
@@ -143,7 +143,7 @@ void setup() {
   dcm_fb_position = 0;
   dcm_fb_position_ticks = 0;
   dcm_fb_velocity = 0;
-  dcm_target_position = 0;
+  dcm_target_position = 180;
   dcm_target_velocity = 0;
   dcm_velocity_power = 0;
   dcm_control_scheme = DCM_CONTROL_POSITION;
@@ -343,5 +343,13 @@ int pid(int target, int current, int p, int i, int d, int i_clamp, int out_clamp
 
   int sum = p_term + i_term + d_term + punch_term;
   limit(&sum, -out_clamp, out_clamp);
+//  Serial.print("T: ");
+//  Serial.print(target);
+//  Serial.print(" \t C: ");
+//  Serial.println(current);
+//  Serial.print(" \t E: ");
+//  Serial.print(error);
+//  Serial.print("     \t S: ");
+//  Serial.println(sum);
   return sum;
 }
