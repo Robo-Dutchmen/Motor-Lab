@@ -17,6 +17,19 @@
 // Create variable to store the distance:
 int IRdistance_cm, setDist;
 long duration, USdistance_cm;
+int STEPPER_input_degrees;
+int DC_input_degrees;
+int SERVO_input_degrees;
+
+int DC_velocity;
+int IR_distance;
+
+int MAX_SERVO_DIST = ;
+int MIN_SERVO_DIST = ;
+
+int mapDistanceToDegrees(int distance){
+  wraptopi(distance, max, min);
+}
 
 /* IR Sensor Model :
   GP2Y0A02YK0F --> 20150
