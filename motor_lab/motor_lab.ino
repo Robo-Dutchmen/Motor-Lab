@@ -4,15 +4,17 @@
 #include <Servo.h>
 
 #define potPin A0
-#define trigPin 5
-#define echoPin 4
+#define trigPin 8
+#define echoPin 7
 #define IRPin A1
 #define model 1080
 #define STEPPER_STP_PIN 12
 #define STEPPER_DIR_PIN 13
 #define STEPPER_STEPS_PER_REV 400
-#define DCMOTOR_IN1 2
-#define DCMOTOR_IN2 3
+#define DCMOTOR_IN1 5
+#define DCMOTOR_IN2 6
+#define DCMOTOR_ENC1 2
+#define DCMOTOR_ENC2 3
 #define SERVO_PIN 10
 
 // Create variable to store the distance:
