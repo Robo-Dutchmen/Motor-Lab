@@ -15,6 +15,9 @@
 
 #define PWM_MAX 255
 
+// Button Pin
+#define PIN_BUTTON 9
+
 // Motor encoder pins
 #define PIN_MOTOR_ENCODER_A 2
 #define PIN_MOTOR_ENCODER_B 3
@@ -59,6 +62,7 @@
 // Create variable to store the distance:
 int IRdistance_cm, setDist;
 long USdistance_cm;
+int button_state;
 
 // Previous encoder state;
 int dcm_fb_a;
@@ -121,6 +125,9 @@ void setup() {
   pinMode(STEPPER_STP_PIN, OUTPUT);
   pinMode(STEPPER_DIR_PIN, OUTPUT);
 
+  // Button Pin
+  pinMode(PIN_BUTTON, INPUT);
+
   // SERVO PINS
   servo.attach(SERVO_PIN);
 
@@ -155,6 +162,7 @@ void loop() {
 //  setDist = map(analogRead(potPin),0,1023,0,50);
   setDist = analogRead(potPin);
   USdistance_cm = read_ultrasonic_sensor();
+  button_state = digitalRead(PIN_BUTTON);
   print_sensors();
 //  dcm_step();
 }
@@ -175,7 +183,9 @@ void print_sensors() {
   Serial.print(",");
   Serial.print(USdistance_cm);
   Serial.print(",");
-  Serial.println(setDist);
+  Serial.print(setDist);
+  Serial.print(",");
+  Serial.println(button_state);
   
 //  stepper_set_steps(100);
 }
@@ -297,14 +307,14 @@ void update_dcm_pos_feedback() {
   dcm_fb_position_ticks += pos_offset;
   dcm_fb_position = (dcm_fb_position_ticks * DCM_TICKS_TO_DEG_NUMERATOR) / DCM_TICKS_TO_DEG_DENOMINATOR;
 }
-
-<<<<<<< HEAD
+/*
 void servo_goto(int deg)
 {
   int pulselen = map(deg, 0, 180, SERVOMIN, SERVOMAX);
   uint8_t servonum = 15; // address on the board where the servo is wired
   servo.setPWM(servonum, 0, pulselen);
-=======
+}
+*/
 /*
  * Params
  *  Target:     The target value
@@ -360,5 +370,4 @@ int pid(int target, int current, int p, int i, int d, int i_clamp, int out_clamp
 //  Serial.print("     \t S: ");
 //  Serial.println(sum);
   return sum;
->>>>>>> 811eabd2c6cb3c8ab2f44f67c82fd57c6dbfc73c
 }
