@@ -1,5 +1,7 @@
 # Motor Lab
 
+![](./media/full_circuit.jpg)
+
 ## Description
 This repository contains our code for Motor Lab for Mechatronics Design 2020. For this lab, we integrated the three sensors from [Sensor Lab](https://github.com/Robo-Dutchmen/Sensor-Lab) with three Hebi Actuators. The GUI allows the user to see the values of all three sensors as well as toggle how the motors are controlled. The sensors can control the motor positions based on their values. The GUI also allows the user to manually control the motors' positions and velocity.
 
@@ -8,8 +10,12 @@ This repository contains our code for Motor Lab for Mechatronics Design 2020. Fo
 ### Network Setup
 To ensure that it is possible to communicate with the Hebi Actuators, ensure that all the Hebi Actuators are powered with the 24V power and that all actuators are connected to an external router through Ethernet cables. Further, ensure that the working computer is connected to the router either through WiFi or Ethernet.
 
+![](./media/actuators.jpg)
+
 ### GUI
 Ensure that App Designer is installed in MATLAB by double clicking ```matlab_gui.mlapp```. This should result in a view similar to the following:
+
+![](./media/gui.jpg)
 
 ### Arduino
 To wire up the Arduino, follow the wiring schematic from [Sensor Lab](https://github.com/Robo-Dutchmen/Sensor-Lab).
